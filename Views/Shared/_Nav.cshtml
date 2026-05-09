@@ -1,0 +1,11 @@
+﻿<nav class="nav">
+  <a href="/" class="nav-link">Dashboard</a>
+  <a href="/Grades" class="nav-link">Grades</a>
+  <a href="/Exams" class="nav-link">Exams (Committees)</a>
+  <a href="/Teachers" class="nav-link">Teachers</a>
+  <a href="/Solver" class="nav-link">Solver</a>
+  <a href="/export/schedule.xlsx" class="nav-link">Export Excel</a>
+  @if (User.IsInRole("Admin")) {
+      <a href="/Admin" class="nav-link text-warning">Admin Panel</a>
+  }
+</nav>

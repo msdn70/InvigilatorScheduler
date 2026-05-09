@@ -1,0 +1,82 @@
+﻿@model InvigilatorSchedulerStandard.Models.ExamsVm
+@{
+  ViewData["Title"] = "Exams (Committees)";
+  Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+  <h2>Add Exam Session</h2>
+  <form method="post" action="/Exams/Create" class="form">
+    @Html.AntiForgeryToken()
+
+    <div class="grid-2">
+      <div>
+        <label>Day</label>
+        <input name="Day" value="@Model.Day" placeholder="Sun / Mon / Tue..." />
+        <div class="validation">@Html.ValidationMessageFor(m => m.Day)</div>
+      </div>
+      <div>
+        <label>Session Index</label>
+        <input type="number" name="SessionIndex" value="@Model.SessionIndex" />
+        <div class="validation">@Html.ValidationMessageFor(m => m.SessionIndex)</div>
+      </div>
+
+      <div>
+        <label>Grade</label>
+        <select name="GradeId">
+          <option value="">-- select grade --</option>
+          @foreach (var g in Model.Grades)
+          {
+            <option value="@g.Id">@g.Name</option>
+          }
+        </select>
+        <div class="validation">@Html.ValidationMessageFor(m => m.GradeId)</div>
+      </div>
+
+      <div>
+        <label>Subject</label>
+        <input name="SubjectName" value="@Model.SubjectName" placeholder="Math / English..." />
+        <div class="validation">@Html.ValidationMessageFor(m => m.SubjectName)</div>
+      </div>
+
+      <div>
+        <label>Invigilators Override (0 = default)</label>
+        <input type="number" name="InvigilatorsOverride" value="@Model.InvigilatorsOverride" />
+        <div class="validation">@Html.ValidationMessageFor(m => m.InvigilatorsOverride)</div>
+      </div>
+    </div>
+
+    <button type="submit">Add Exam</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Exams List</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th><th>Day</th><th>Session</th><th>GradeId</th><th>Subject</th><th>Override</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+    @foreach (var e in Model.Items)
+    {
+      <tr>
+        <td>@e.Id</td>
+        <td>@e.Day</td>
+        <td>@e.SessionIndex</td>
+        <td>@e.GradeId</td>
+        <td>@e.SubjectName</td>
+        <td>@e.InvigilatorsOverride</td>
+        <td class="right">
+          <form method="post" action="/Exams/Delete">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@e.Id" />
+            <button class="danger" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+    }
+    </tbody>
+  </table>
+</div>

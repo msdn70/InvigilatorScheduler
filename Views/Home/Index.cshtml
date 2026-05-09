@@ -1,0 +1,22 @@
+﻿@model InvigilatorSchedulerStandard.Models.DashboardVm
+@{
+  ViewData["Title"] = "Dashboard";
+  Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="grid-cards">
+  <div class="card kpi"><div class="kpi-title">Grades</div><div class="kpi-value">@Model.GradesCount</div></div>
+  <div class="card kpi"><div class="kpi-title">Exams</div><div class="kpi-value">@Model.ExamsCount</div></div>
+  <div class="card kpi"><div class="kpi-title">Teachers</div><div class="kpi-value">@Model.TeachersCount</div></div>
+  <div class="card kpi"><div class="kpi-title">Restrictions</div><div class="kpi-value">@Model.RestrictionsCount</div></div>
+</div>
+
+<div class="card">
+  <h2>Workflow</h2>
+  <ol class="steps">
+    <li>Add Grades</li>
+    <li>Add Exams (Committees)</li>
+    <li>Add Teachers + Restrictions</li>
+    <li>Run Solver → Export Excel</li>
+  </ol>
+</div>

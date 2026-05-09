@@ -1,0 +1,41 @@
+﻿@model InvigilatorSchedulerStandard.Models.GradesVm
+@{
+  ViewData["Title"] = "Grades";
+  Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+  <h2>Add Grade</h2>
+  <form method="post" action="/Grades/Create" class="form">
+    @Html.AntiForgeryToken()
+    <div class="form-row">
+      <label>Name</label>
+      <input name="Name" value="@Model.Name" placeholder="e.g. Grade 4" />
+      <button type="submit">Add</button>
+    </div>
+    <div class="validation">@Html.ValidationMessageFor(m => m.Name)</div>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Grades List</h2>
+  <table class="table">
+    <thead><tr><th>#</th><th>Name</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var g in Model.Items)
+    {
+      <tr>
+        <td>@g.Id</td>
+        <td>@g.Name</td>
+        <td class="right">
+          <form method="post" action="/Grades/Delete">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@g.Id" />
+            <button class="danger" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+    }
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,60 @@
+﻿@model InvigilatorSchedulerStandard.Models.TeachersVm
+@{
+  ViewData["Title"] = "Teachers";
+  Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+  <h2>Add Teacher</h2>
+  <form method="post" action="/Teachers/Create" class="form">
+    @Html.AntiForgeryToken()
+
+    <div class="grid-2">
+      <div>
+        <label>Name</label>
+        <input name="Name" value="@Model.Name" placeholder="Teacher name (Arabic supported)" />
+        <div class="validation">@Html.ValidationMessageFor(m => m.Name)</div>
+      </div>
+      <div>
+        <label>Subject</label>
+        <input name="Subject" value="@Model.Subject" placeholder="Math / English ..." />
+        <div class="validation">@Html.ValidationMessageFor(m => m.Subject)</div>
+      </div>
+    </div>
+
+    <label>Restricted Committees (kid conflict)</label>
+    <select name="RestrictedExamSessionIds" multiple size="10" class="multi">
+      @foreach (var ex in Model.ExamPickList)
+      {
+        <option value="@ex.Id">@ex.Text</option>
+      }
+    </select>
+
+    <button type="submit">Add Teacher</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Teachers List</h2>
+  <table class="table">
+    <thead><tr><th>#</th><th>Name</th><th>Subject</th><th>Restricted</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var t in Model.Items)
+    {
+      <tr>
+        <td>@t.Id</td>
+        <td class="rtl">@t.Name</td>
+        <td>@t.Subject</td>
+        <td>@(t.RestrictedIds.Count == 0 ? "None" : string.Join(", ", t.RestrictedIds))</td>
+        <td class="right">
+          <form method="post" action="/Teachers/Delete">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@t.Id" />
+            <button class="danger" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+    }
+    </tbody>
+  </table>
+</div>

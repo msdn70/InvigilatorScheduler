@@ -1,0 +1,119 @@
+﻿@model InvigilatorSchedulerStandard.Models.SolverVm
+@using System.Text.Json
+@{
+  ViewData["Title"] = "Solver";
+  Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.Message))
+{
+  <div class="card notice">@Model.Message</div>
+}
+
+<div class="card">
+  <h2>Settings</h2>
+
+  <form method="post" action="/Solver/Save" class="form">
+    @Html.AntiForgeryToken()
+
+    <div class="grid-2">
+      <div>
+        <label>Default invigilators per exam</label>
+        <input type="number" name="DefaultInvigilatorsPerExam" value="@Model.DefaultInvigilatorsPerExam" />
+      </div>
+      <div>
+        <label>Backup invigilators per day</label>
+        <input type="number" name="BackupInvigilatorsPerDay" value="@Model.BackupInvigilatorsPerDay" />
+      </div>
+      <div>
+        <label>Random seed</label>
+        <input type="number" name="RandomSeed" value="@Model.RandomSeed" />
+      </div>
+      <div>
+        <label>Fairness enabled</label>
+        <select name="FairnessEnabled">
+          <option value="true" selected="@(Model.FairnessEnabled ? "selected" : null)">true</option>
+          <option value="false" selected="@(!Model.FairnessEnabled ? "selected" : null)">false</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <button type="submit">Save</button>
+      <a class="btn" href="/Solver">Reload</a>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Generate</h2>
+
+  <form method="post" action="/Solver/Solve">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="DefaultInvigilatorsPerExam" value="@Model.DefaultInvigilatorsPerExam" />
+    <input type="hidden" name="BackupInvigilatorsPerDay" value="@Model.BackupInvigilatorsPerDay" />
+    <input type="hidden" name="RandomSeed" value="@Model.RandomSeed" />
+    <input type="hidden" name="FairnessEnabled" value="@Model.FairnessEnabled.ToString().ToLower()" />
+
+    <div class="row">
+      <button type="submit">Solve</button>
+      <a class="btn" href="/export/schedule.xlsx">Export Excel</a>
+    </div>
+  </form>
+
+  @if (Model.Result != null)
+  {
+    <hr class="hr" />
+
+    <h3>Schedule</h3>
+
+    @foreach (var dayGroup in Model.Result.Exams
+      .OrderBy(x => x.Day).ThenBy(x => x.SessionIndex).ThenBy(x => x.GradeId)
+      .GroupBy(x => x.Day))
+    {
+      <div class="block">
+        <div class="block-title">@dayGroup.Key</div>
+
+        <table class="table">
+          <thead><tr><th>Session</th><th>Grade</th><th>Subject</th><th>Invigilators</th></tr></thead>
+          <tbody>
+          @foreach (var e in dayGroup)
+          {
+            <tr>
+              <td>@e.SessionIndex</td>
+              <td>@e.GradeName</td>
+              <td>@e.SubjectName</td>
+              <td class="rtl">@string.Join(" | ", e.Invigilators.Select(t => $"{t.Name} ({t.Subject})"))</td>
+            </tr>
+          }
+          </tbody>
+        </table>
+
+        @{
+          var backups = Model.Result.Backups.FirstOrDefault(b => b.Day == dayGroup.Key);
+        }
+        @if (backups != null)
+        {
+          <div class="meta">
+            <b>Backups:</b>
+            <span class="rtl">@string.Join(" | ", backups.Teachers.Select(t => $"{t.Name} ({t.Subject})"))</span>
+            (Count: @backups.BackupCount)
+          </div>
+        }
+      </div>
+    }
+
+    <details class="details">
+      <summary>Raw JSON</summary>
+      <pre class="pre">@JsonSerializer.Serialize(Model.Result, new JsonSerializerOptions { WriteIndented = true })</pre>
+    </details>
+
+    @if (Model.Result.Notes?.Count > 0)
+    {
+      <details class="details">
+        <summary>Notes / Warnings</summary>
+        <pre class="pre">@string.Join("\n", Model.Result.Notes)</pre>
+      </details>
+    }
+  }
+</div>

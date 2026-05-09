@@ -1,0 +1,37 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>@ViewData["Title"] - Invigilator Scheduler</title>
+  <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">Invigilator<br/><span>Scheduler</span></div>
+    @await Html.PartialAsync("_Nav")
+    @await Html.PartialAsync("_LoginPartial")
+    <div class="sidebar-foot">Ubuntu + SQL Server</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-title">@ViewData["Title"]</div>
+      <div class="topbar-actions"></div>
+    </header>
+
+    <main class="content">
+      @RenderBody()
+    </main>
+
+    <footer class="footer">
+      <span>© @DateTime.Now.Year</span>
+    </footer>
+  </div>
+</div>
+
+@RenderSection("Scripts", required: false)
+</body>
+</html>
